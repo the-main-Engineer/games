@@ -15,32 +15,55 @@ global_command=[]
 window_draw=[]
 mesh_stage=[]
 window_measures=[
-    16,     #multiplyer x
-    9       #  " "      y
+    1200,     #multiplyer x
+    900       #  " "      y
 ]
 #</globals>
-def map_draw_up(cord_x,cord_y,ctyp,upscale):
+def map_draw_up(cord_x,cord_y,ctyp,upscale,doors,door):
     global mesh_stage
     for i in range(0,upscale):
-        if not i==upscale/2:
-            mesh_stage[cord_y-i][cord_x]=1#ctyp
-def map_draw_down(cord_x,cord_y,ctyp,upscale):
+        if doors:
+            if i!=upscale/2 and cord_y-i>-1:
+                mesh_stage[cord_y-i][cord_x]= ctyp
+                #print(1,cord_x,cord_y-i)
+            else:
+                mesh_stage[cord_y - i][cord_x] = door
+        else:
+            mesh_stage[cord_y - i][cord_x] = ctyp
+def map_draw_down(cord_x,cord_y,ctyp,upscale,doors,door):
     global mesh_stage
     for i in range(0,upscale):
-        if not i==upscale/2:
-            mesh_stage[cord_y+i][cord_x]=2#ctyp
-def map_draw_left(cord_x,cord_y,ctyp,upscale):
+        if doors:
+            if i!=upscale/2 and cord_y+i>-1:
+                mesh_stage[cord_y+i][cord_x]=ctyp
+            else:
+                mesh_stage[cord_y+i][cord_x]=door
+        else:
+            mesh_stage[cord_y + i][cord_x] = ctyp
+def map_draw_left(cord_x,cord_y,ctyp,upscale,doors,door):
     global mesh_stage
     for i in range(0,upscale):
-        if not i==upscale/2:
-            mesh_stage[cord_y][cord_x-i]=3#ctyp
-def map_draw_right(cord_x,cord_y,ctyp,upscale):
+        if doors:
+            if i!=upscale/2 and cord_x-i>-1:
+                mesh_stage[cord_y][cord_x-i]=ctyp
+                #print(3,cord_x-i, cord_y)
+            else:
+                mesh_stage[cord_y][cord_x-i]=door
+        else:
+            mesh_stage[cord_y][cord_x - i] = ctyp
+def map_draw_right(cord_x,cord_y,ctyp,upscale,doors,door):
     global mesh_stage
     for i in range(0,upscale):
-        if not i==upscale/2:
-            mesh_stage[cord_y][cord_x+i]=4#ctyp
-def create_map(name="",geometry=[5,5],upscale=6,materials=1):
+        if doors:
+            if i!=upscale/2 and cord_x+i>-1:
+                mesh_stage[cord_y][cord_x+i]=ctyp
+            else:
+                mesh_stage[cord_y][cord_x+i]=door
+        else:
+            mesh_stage[cord_y][cord_x + i] = ctyp
+def create_map(name="",geometry=[5,5],upscale=6,materials=1,random_doors=True,types="0123"):
     global mesh_stage
+    door=materials+1
     materials+=1
     if upscale%2!=0:
         upscale+=1
@@ -48,59 +71,63 @@ def create_map(name="",geometry=[5,5],upscale=6,materials=1):
     for y in range(0,geometry[1]-1):
         temp=[]
         for x in range(0,geometry[0]-1):
-            temp+=[[random.randrange(0,4),random.randrange(0,4),random.randrange(1,materials)]]
+            temp+=[[random.choice(types),random.randrange(0,4),random.randrange(1,materials)]] #0 is ang
         symbolic_stage+=[temp]
+    #print(symbolic_stage)
     mesh_stage=[]
     mesh_geometry=[geometry[0]*upscale,geometry[1]*upscale]
-    for y in range(0,mesh_geometry[1]+2):
+    for y in range(0,mesh_geometry[1]-1):
         temp=[]
-        for x in range(0,mesh_geometry[0]+2):
-            temp+=[" "]#temp=[0]
+        for x in range(0,mesh_geometry[0]-1):
+            temp+=[" "]
         mesh_stage+=[temp]
     for cy, y in enumerate(symbolic_stage):
         for cx,x in enumerate(y):
             ang,styp,ctyp=x[0],x[1],x[2]
-            cord_x,cord_y=cx*upscale,cy*upscale
+            cord_x,cord_y=cx*upscale+upscale-1,cy*upscale+upscale-1
             if styp==0:
                 if ang==0:
-                    map_draw_right(cord_x,cord_y,ctyp,upscale)
+                    map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 elif ang==1:
-                    map_draw_left(cord_x,cord_y,ctyp,upscale)
+                    map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 elif ang==2:
-                    map_draw_up(cord_x,cord_y,ctyp,upscale)
+                    map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 else:
-                    map_draw_down(cord_x,cord_y,ctyp,upscale)
+                    map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
             elif styp==1:
                 if ang==0:
-                    map_draw_right(cord_x,cord_y,ctyp,upscale)
-                    map_draw_left(cord_x,cord_y,ctyp,upscale)
-                    map_draw_up(cord_x,cord_y,ctyp,upscale)
+                    map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 elif ang==1:
-                    map_draw_right(cord_x,cord_y,ctyp,upscale)
-                    map_draw_left(cord_x,cord_y,ctyp,upscale)
-                    map_draw_down(cord_x,cord_y,ctyp,upscale)
+                    map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 elif ang==2:
-                    map_draw_right(cord_x,cord_y,ctyp,upscale)
-                    map_draw_up(cord_x,cord_y,ctyp,upscale)
-                    map_draw_down(cord_x,cord_y,ctyp,upscale)
+                    map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 else:
-                    map_draw_left(cord_x,cord_y,ctyp,upscale)
-                    map_draw_up(cord_x,cord_y,ctyp,upscale)
-                    map_draw_down(cord_x,cord_y,ctyp,upscale)
+                    map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
             elif styp==2:
-                map_draw_up(cord_x,cord_y,ctyp,upscale)
-                map_draw_down(cord_x,cord_y,ctyp,upscale)
-                map_draw_right(cord_x,cord_y,ctyp,upscale)
-                map_draw_left(cord_x,cord_y,ctyp,upscale)            
+                map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)            
             else:
                 if ang==0 or  ang==1:
-                    map_draw_up(cord_x,cord_y,ctyp,upscale)
-                    map_draw_down(cord_x,cord_y,ctyp,upscale)
+                    map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 else:
-                    map_draw_right(cord_x,cord_y,ctyp,upscale)
-                    map_draw_left(cord_x,cord_y,ctyp,upscale)
+                    map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
+                    map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)
             mesh_stage[cord_y][cord_x]="*"
-
+    #print(mesh_stage)
+    return mesh_stage
+def material_selector():
+    pass
 def imsg(text): #use for internal messages of module
     global internal_msg
     if internal_msg:
@@ -108,10 +135,10 @@ def imsg(text): #use for internal messages of module
 def msg(text): #use for interaction with player
     print(text)
 def pygame_window():  #pygame window
-    global global_running, window_draw
+    global global_running, window_draw, window_measures
     imsg("window_module      started")
     pygame.init()
-    screen=pygame.display.set_mode([1600,900])
+    screen=pygame.display.set_mode(window_measures)
     a=0
     while global_running:
         for event in pygame.event.get():
@@ -122,7 +149,7 @@ def pygame_window():  #pygame window
         screen.fill((0,0,0))
         for cy,y in window_draw:
             for cx,x in y:
-                pygame.draw.rect(DISPLAY, material_selector(), (200, 150, 100, 50))
+                pygame.draw.rect(screen, material_selector(), (200, 150, 100, 50))
         pygame.display.update()
         pygame.time.Clock().tick(30)
         imsg(str(a)+str(a))
@@ -254,5 +281,5 @@ def main():
 if __name__=="__main__":
     main()
 #only for testing
-#game()
-create_map(name="test_test.map")
+game()
+#create_map(name="test_test.map")
