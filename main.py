@@ -115,7 +115,7 @@ def create_map(name="",geometry=[5,5],upscale=6,materials=1,random_doors=True,ty
                 map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 map_draw_down(cord_x,cord_y,ctyp,upscale,random_doors,door)
                 map_draw_right(cord_x,cord_y,ctyp,upscale,random_doors,door)
-                map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)            
+                map_draw_left(cord_x,cord_y,ctyp,upscale,random_doors,door)
             else:
                 if ang==0 or  ang==1:
                     map_draw_up(cord_x,cord_y,ctyp,upscale,random_doors,door)
@@ -229,18 +229,24 @@ class opt_thread(threading.Thread):
             calc_map()
         elif self.name=="uinput":
             uinput()
+        elif self.name=="stage":
+            manage_stage()
         else:
-            imsg("no thread secified")
+            imsg("no thread specified")
 def game():
     thread_calc_map     = opt_thread(1,"calc_map")
     thread_calc_vision  = opt_thread(2,"calc_vision")
     thread_display      = opt_thread(3,"display")
     thread_uinput       = opt_thread(4,"uinput")
+    thread_manage_stage = opt_thread(5,"stage")
 
     thread_calc_map     .start()
     thread_calc_vision  .start()
     thread_display      .start()
     thread_uinput       .start()
+    thread_manage_stage .start()
+def manage_stage():
+    pass
 class settings():
     global global_settings
     def get(ID=0):
