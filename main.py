@@ -1,8 +1,8 @@
 import random
+from typing import Text
 import pygame
 import threading
 import sys
-import devtools
 #<globals>
 global_running=True
 internal_msg=False
@@ -183,6 +183,10 @@ class cmd():
         return out[0]
 def getInt(some:str):
     return(int(some))
+def game_selectors():
+    pass
+def start_game():
+    pass
 def uinput():
     global global_running
     while global_running:
@@ -209,6 +213,10 @@ def uinput():
             break
         elif uinput[0:3]=="move":
             cmd.add(1,getInt(uinput[4:len(uinput)]))
+        elif uinput[0:4]=="start":
+            if len(uinput>5):
+                game_selectors(uinput[5:len(uinput)])
+            start_game()
 def calc_map():
     global global_running
     imsg("calc_map_module    started")
@@ -247,11 +255,65 @@ def game():
     thread_manage_stage .start()
 def manage_stage():
     pass
+def savestr(i,spacer="\n"):
+    a=type(i)
+    if a == int:
+        temp=f'int-{i}{spacer}'
+    elif a == str:
+        temp=f'str-{i}{spacer}'
+    elif a == list:
+        temp=f'::la{spacer}'
+        for p in i:
+            #input(f'{p}of{i}')
+            temp+=f'{savestr(p)}'
+        temp+=f'::le{spacer}'
+    elif a == bool:
+        temp=f'bool{i}{spacer}'
+    imsg(temp)
+    return temp
+def loadstr(inpt:str):
+    out=[]
+    in_1=inpt.split("\n")
+    in_2=[]
+    lst=False
+    tmplst=""
+    for i in in_1:
+        a=i[0:4]
+        b=i[4:len(i)]
+        temp=""
+        print(f'   {a};{b}--')
+        if a=="str-":
+            temp=str(b)
+        elif a=="int-":
+            temp=int(b)
+        elif a=="::la":
+            lst=True
+        elif a=="::le":
+            temp=loadstr(tmplst)
+            tmplst=""
+            lst=False
+        elif a=="bool":
+            temp=bool(b)
+        if lst:
+            tmplst+=f'{temp}\n'
+        else:
+            in_2+=[temp]
+    return in_2
 class settings():
     global global_settings
     def get(ID=0):
         print(ID,len(global_settings))
         return global_settings[ID]
+    def load(name="main.conf"):
+        global global_settings
+        pass
+    def save(name="main.conf"):
+        global global_settings
+        out=""
+        for i in global_settings:
+            out+=savestr(i)
+        with open(name,"w")as f:
+            f.write(out)
     def defaults():
         global global_settings
         global_settings=[                                          #id
@@ -287,5 +349,7 @@ def main():
 if __name__=="__main__":
     main()
 #only for testing
-game()
+#settings.defaults()
+#settings.save()
+#game()
 #create_map(name="test_test.map")
