@@ -1,5 +1,4 @@
 import random
-from typing import Text
 import pygame
 import threading
 import sys
@@ -290,7 +289,6 @@ def loadstr(inpt:str):
             lst=True
         elif a=="::le":
             temp=loadstr(tmplst)
-            tmplst=""
             lst=False
         elif a=="bool":
             temp=bool(b)
@@ -298,6 +296,7 @@ def loadstr(inpt:str):
             tmplst+=f'{temp}\n'
         else:
             in_2+=[temp]
+            tmplst=""
     return in_2
 class settings():
     global global_settings
